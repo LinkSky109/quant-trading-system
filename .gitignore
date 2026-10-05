@@ -42,6 +42,7 @@ web-dashboard/logs/*.jsonl
 # Data
 data/quant_trading.db*
 data/fundamental_cache/*.json
+models/fine_tuned/
 
 # Coverage
 .coverage
