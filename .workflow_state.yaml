@@ -1,0 +1,432 @@
+# Agent Continuous Workflow — 全局上下文
+# 任务ID: TASK-20261002-001
+# 工作流: quant-trading-v4
+# 创建时间: 2026-10-02
+
+task_id: "TASK-20261002-001"
+task_name: "量化交易系统 v4.0 — P0+P1首批10项需求"
+create_time: "2026-10-02T00:00:00+08:00"
+current_global_state: "GLOBAL_DONE"
+
+requirement:
+  req_id: "QUANT-V4"
+  req_title: "量化交易系统 v4.0 增强"
+  acceptance_criteria:
+    - "10项需求全部开发完成"
+    - "单元测试覆盖率≥80%"
+    - "全量测试通过率100%"
+    - "一致性校验四维通过"
+    - "前后端联调无JS错误"
+  product_owner: "link"
+  req_doc_link: "REQUIREMENTS.md"
+
+# 需求执行清单（按批次）
+requirements:
+  # 第1批：小工作量无依赖 — 已完成 DEV_DONE
+  - id: "REQ-P0-05"
+    name: "安全审计日志"
+    batch: 1
+    state: "DEV_DONE"
+    priority: "P0"
+    module: "security/audit.py"
+    tests_added: 35
+  - id: "REQ-P0-06"
+    name: "API限流"
+    batch: 1
+    state: "DEV_DONE"
+    priority: "P0"
+    module: "security/rate_limit.py"
+    tests_added: 27
+  - id: "REQ-P1-01"
+    name: "回测走查器前端"
+    batch: 1
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "前端"
+  - id: "REQ-P1-02"
+    name: "策略对比仪表盘"
+    batch: 1
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "前端"
+  # 第2批：小工作量 — 已完成 DEV_DONE
+  - id: "REQ-P1-07"
+    name: "配置热加载"
+    batch: 2
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "config/"
+    tests_added: 22
+  - id: "REQ-P1-08"
+    name: "结构化日志"
+    batch: 2
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "monitoring/"
+    tests_added: 19
+  - id: "REQ-P2-11"
+    name: "通知中心前端"
+    batch: 2
+    state: "DEV_DONE"
+    priority: "P2"
+    module: "前端"
+  # 第3批：中工作量 — 已完成 DEV_DONE
+  - id: "REQ-P0-03"
+    name: "风险模型VaR/CVaR"
+    batch: 3
+    state: "DEV_DONE"
+    priority: "P0"
+    module: "risk/var_model.py"
+    tests_added: 22
+  - id: "REQ-P1-04"
+    name: "配对交易策略"
+    batch: 3
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "strategies/pairs_trading.py"
+    tests_added: 19
+  - id: "REQ-P1-05"
+    name: "Jev推理性能优化"
+    batch: 3
+    state: "DEV_DONE"
+    priority: "P1"
+    module: "jev/"
+    tests_added: 18
+
+dev_context:
+  dev_owner: "agent"
+  feature_branch: "main"
+  unit_test_coverage: 0
+  lint_result: "pending"
+  dev_complete_time: ""
+  batch1_complete: true
+  batch1_modules: "security/audit.py, security/rate_limit.py, persistence/database.py, web-dashboard/server.py, web-dashboard/quant_dashboard_realtime.html, config/config.yaml"
+
+test_context:
+  test_owner: "agent"
+  test_env: "local"
+  test_case_total: 954
+  test_case_pass: 940
+  test_case_skipped: 14
+  bug_count: 0
+  bug_closed_count: 0
+  test_report_link: ""
+  batch1_result: "840 passed, 14 skipped, 0 failed"
+  batch2_result: "881 passed, 14 skipped, 0 failed"
+  batch3_result: "940 passed, 14 skipped, 0 failed"
+  final_result: "940 passed, 14 skipped, 0 failed — 全量通过"
+
+consistency_context:
+  code_check: "pending"
+  env_check: "pending"
+  data_check: "pending"
+  doc_check: "pending"
+
+sla_info:
+  total_deadline: "2026-10-05"
+  risk_level: "normal"
+
+operation_logs:
+  - time: "2026-10-02T00:00:00+08:00"
+    operator: "main_agent"
+    action: "工作流初始化"
+    result: "GLOBAL_PENDING → GLOBAL_IN_DEV，需求清单10项"
+  - time: "2026-10-02T13:30:00+08:00"
+    operator: "organizer_agent"
+    action: "第1批需求分析完成"
+    result: "输出 analysis/batch1_requirement_analysis.md，4项需求拆解完毕"
+  - time: "2026-10-02T13:45:00+08:00"
+    operator: "subagent_s_000cfHm2A6c"
+    action: "REQ-P0-05 安全审计日志 开发完成"
+    result: "security/audit.py + audit_logs表 + 2个API + 35条测试，哈希链双写"
+  - time: "2026-10-02T13:48:00+08:00"
+    operator: "subagent_s_000cfHmdN50"
+    action: "REQ-P1-01+P1-02 前端增强 开发完成"
+    result: "走查器(控制栏/详情/K线/高亮/缓存) + 策略对比(雷达/散点/热力/相关性/9指标)，HTML 2293→2893行"
+  - time: "2026-10-02T13:55:00+08:00"
+    operator: "subagent_s_000cfJU6eIW"
+    action: "REQ-P0-06 API限流 开发完成"
+    result: "security/rate_limit.py 令牌桶 + 4级限流 + 中间件 + 27条测试，发现FastAPI中间件逆序执行并修正"
+  - time: "2026-10-02T13:58:00+08:00"
+    operator: "organizer_agent"
+    action: "第1批全量测试+端到端验证"
+    result: "840 passed, 14 skipped; 审计/限流API正常，哈希链验证通过，前端页面200"
+  - time: "2026-10-02T14:00:00+08:00"
+    operator: "organizer_agent"
+    action: "第2批开发启动"
+    result: "P1-07配置热加载+P1-08结构化日志(后端代理) + P2-11通知中心(前端代理) 并行派发"
+  - time: "2026-10-02T14:08:00+08:00"
+    operator: "subagent_s_000cfW4BkpK"
+    action: "REQ-P2-11 通知中心前端 开发完成"
+    result: "Toast弹窗+Web Audio提示音+通知中心面板+偏好设置+WebSocket集成+桌面通知，HTML 2893→3523行"
+  - time: "2026-10-02T14:15:00+08:00"
+    operator: "subagent_s_000cfW4ZvXA"
+    action: "REQ-P1-07+P1-08 后端 开发完成"
+    result: "HotReloadManager(热加载/diff/脱敏/SIGHUP)+结构化日志(JSONFormatter/RequestID中间件/轮转文件)+6个API+41条测试"
+  - time: "2026-10-02T14:18:00+08:00"
+    operator: "organizer_agent"
+    action: "第2批全量测试+端到端验证"
+    result: "881 passed, 14 skipped; config/logs API正常，结构化日志文件生成，前端页面200"
+  - time: "2026-10-02T14:20:00+08:00"
+    operator: "organizer_agent"
+    action: "第3批开发启动（最后一批）"
+    result: "P0-03 VaR/CVaR+P1-04配对交易(后端代理) + P1-05 Jev性能优化(独立代理) 并行派发"
+  - time: "2026-10-02T14:28:00+08:00"
+    operator: "subagent_s_000cfuLrEEw"
+    action: "REQ-P1-05 Jev推理性能优化 开发完成"
+    result: "jev_engine增强(批量推理/异步队列/LRU缓存/信号量并发/延迟统计P50/P95/P99)+/api/jev/performance+18条测试"
+  - time: "2026-10-02T14:31:00+08:00"
+    operator: "subagent_s_000cfuLGrO3"
+    action: "REQ-P0-03+P1-04 后端 开发完成"
+    result: "VaRModel(历史/参数法VaR·CVaR/5压力场景/Euler分解)+PairsTradingStrategy(Engle-Granger协整/z-score信号)+6个API+41条测试"
+  - time: "2026-10-02T14:35:00+08:00"
+    operator: "organizer_agent"
+    action: "最终全量测试+端到端验证"
+    result: "940 passed, 14 skipped, 0 failed; 全部15个新API端点验证通过; 前端页面200(166KB); 服务运行在8766"
+  - time: "2026-10-02T14:36:00+08:00"
+    operator: "organizer_agent"
+    action: "工作流完成"
+    result: "GLOBAL_IN_DEV → GLOBAL_DONE，10项需求全部交付，新增162条测试，零回归"
+
+# ===========================================================================
+# v4.1 新一轮任务：TASK-20261003-002（第1批 4 项后端需求）
+# ===========================================================================
+v41_task:
+  task_id: "TASK-20261003-002"
+  task_name: "量化交易系统 v4.1 — 第1批4项后端需求"
+  create_time: "2026-10-03T15:55:00+08:00"
+  current_global_state: "GLOBAL_DONE"
+  base_baseline: "940 passed + 14 skipped（954 total）"
+
+  requirements:
+    - id: "REQ-P0-02"
+      name: "订单管理系统(OMS)"
+      state: "DEV_DONE"
+      priority: "P0"
+      module: "trading/oms.py"
+      route: "web-dashboard/_routes_oms.py"
+      tests_added: 36
+    - id: "REQ-P1-03"
+      name: "Brinson绩效归因"
+      state: "DEV_DONE"
+      priority: "P1"
+      module: "analysis/brinson.py"
+      route: "web-dashboard/_routes_brinson.py"
+      tests_added: 24
+    - id: "REQ-P1-09"
+      name: "因子风险暴露监控"
+      state: "DEV_DONE"
+      priority: "P1"
+      module: "risk/factor_exposure.py"
+      route: "web-dashboard/_routes_factor_exposure.py"
+      tests_added: 18
+    - id: "REQ-P1-10"
+      name: "算法交易(TWAP/VWAP)"
+      state: "DEV_DONE"
+      priority: "P1"
+      module: "trading/algorithmic.py"
+      route: "web-dashboard/_routes_algo.py"
+      tests_added: 32
+
+  final_test:
+    test_case_total: 1064
+    test_case_pass: 1050
+    test_case_skipped: 14
+    failed: 0
+    result: "1050 passed, 14 skipped, 0 failed — 新增110条测试，零回归"
+  e2e_result: "scripts/e2e_v41_check.py：37 passed, 0 failed；19个新端点全部验证；前端页面200"
+  data_limitations:
+    - "Brinson 行业分类为简化/mock（sector_source=mock_simplified，meta 含 P0-04 切换提示）"
+    - "因子暴露 factor_scores 缺省的 FactorEngine 自动取分分支未在 E2E 跑通（防御性 try/except）"
+    - "算法交易后台 daemon 线程自动 tick 路径未单测（与手动 tick 共用代码）"
+
+v41_operation_logs:
+  - time: "2026-10-03T15:55:00+08:00"
+    operator: "organizer_agent"
+    action: "v4.1 第1批开发启动"
+    result: "OMS+Brinson+FactorExposure 三代理并行派发，server.py 注册权收敛到编排者"
+  - time: "2026-10-03T16:12:00+08:00"
+    operator: "subagent_s_000csYiGBFj"
+    action: "REQ-P0-02 OMS 开发完成"
+    result: "状态机/三桶订单簿/成交均价/超时撤单/回调/审计/SQLite orders·fills 表 + 36条测试"
+  - time: "2026-10-03T16:15:00+08:00"
+    operator: "subagent_s_000csYirIZx"
+    action: "REQ-P1-09 因子风险暴露 开发完成"
+    result: "加权暴露/限额告警/中性化建议/时序持久化/贡献度/相关性 + 18条测试"
+  - time: "2026-10-03T16:17:00+08:00"
+    operator: "subagent_s_000csYiG8mp"
+    action: "REQ-P1-03 Brinson 开发完成"
+    result: "BHB/Fachler、Cariño/GRAP 链接、瀑布图、mock 分组标注 + 24条测试，闭合残差0"
+  - time: "2026-10-03T16:30:00+08:00"
+    operator: "subagent_s_000csAKxdRo"
+    action: "REQ-P1-10 算法交易 开发完成"
+    result: "TWAP等分/尾单、VWAP U型/参与率截断、pause/resume/stop、偏差报告 + 32条测试"
+  - time: "2026-10-03T16:33:00+08:00"
+    operator: "organizer_agent"
+    action: "集成修复"
+    result: "修正 OMS/algo 路由相对 db 路径（锚定 PROJECT_ROOT）；VWAP period 标签容错"
+  - time: "2026-10-03T16:48:00+08:00"
+    operator: "organizer_agent"
+    action: "全量测试+重启+E2E"
+    result: "1050 passed/14 skipped/0 failed；重启 8766；E2E 37 passed；GLOBAL_DONE"
+
+# ===========================================================================
+# v4.2 任务：TASK-20261005-004（4 项：CTA/波动率/财务数据/A-B测试）
+# ===========================================================================
+v42_task:
+  task_id: "TASK-20261005-004"
+  task_name: "量化交易系统 v4.2 — CTA策略+波动率策略+财务数据接口+A/B测试框架"
+  create_time: "2026-10-05T13:30:00+08:00"
+  current_global_state: "GLOBAL_DONE"
+  base_baseline: "1108 passed + 14 skipped（v4.1 batch2后）"
+
+  requirements:
+    - id: "REQ-P0-04"
+      name: "财务数据真实接入（Mock+接口预留）"
+      state: "DEV_DONE"
+      priority: "P0"
+      module: "data/fundamental.py"
+      tests_added: 10
+    - id: "REQ-P2-02"
+      name: "CTA趋势跟踪策略"
+      state: "DEV_DONE"
+      priority: "P2"
+      module: "strategies/cta.py"
+      tests_added: 6
+    - id: "REQ-P2-08"
+      name: "波动率交易策略"
+      state: "DEV_DONE"
+      priority: "P2"
+      module: "strategies/volatility.py"
+      tests_added: 8
+    - id: "REQ-P2-10"
+      name: "灰度发布与A-B测试"
+      state: "DEV_DONE"
+      priority: "P2"
+      module: "deployment/ab_testing.py"
+      tests_added: 11
+
+  final_test:
+    test_case_total: 1157
+    test_case_pass: 1143
+    test_case_skipped: 14
+    failed: 0
+    result: "1143 passed, 14 skipped, 0 failed — 新增35条测试，零回归"
+
+  v42_operation_logs:
+    - time: "2026-10-05T13:30:00+08:00"
+      operator: "organizer_agent"
+      action: "v4.2 开发启动"
+      result: "CTA+波动率+财务数据+A/B测试 四模块并行开发"
+    - time: "2026-10-05T14:00:00+08:00"
+      operator: "subagent"
+      action: "REQ-P2-02 CTA策略 开发完成"
+      result: "ATR通道突破+唐奇安通道突破，双模式可配置，metadata输出"
+    - time: "2026-10-05T14:05:00+08:00"
+      operator: "subagent"
+      action: "REQ-P2-08 波动率策略 开发完成"
+      result: "实现波动率+Garman-Klass两种计算，波动率锥分位择时"
+    - time: "2026-10-05T14:10:00+08:00"
+      operator: "subagent"
+      action: "REQ-P0-04 财务数据接口 开发完成"
+      result: "MockProvider(确定性哈希)+CacheProvider+Service，PE/PB/ROE等12项指标"
+    - time: "2026-10-05T14:15:00+08:00"
+      operator: "subagent"
+      action: "REQ-P2-10 A/B测试框架 开发完成"
+      result: "策略版本hash+实验注册+确定性路由+t-test评估+自动回滚决策"
+    - time: "2026-10-05T14:20:00+08:00"
+      operator: "organizer_agent"
+      action: "全量测试+验证"
+      result: "1143 passed/14 skipped/0 failed；新增35条测试零回归；GLOBAL_DONE"
+
+# ===========================================================================
+# v4.1 第2批任务：TASK-20261003-003（3 项：数据对账/Jev解释/移动端）
+# ===========================================================================
+v41_batch2_task:
+  task_id: "TASK-20261003-003"
+  task_name: "量化交易系统 v4.1 — 第2批3项需求（数据校验对账/Jev可解释性/移动端适配）"
+  create_time: "2026-10-03T17:15:00+08:00"
+  current_global_state: "GLOBAL_DONE"
+  base_baseline: "1050 passed + 14 skipped（1064 total，第1批后）"
+
+  requirements:
+    - id: "REQ-P2-09"
+      name: "数据校验与对账"
+      state: "DEV_DONE"
+      priority: "P2"
+      module: "data/validation.py"
+      route: "web-dashboard/_routes_data.py"
+      tests_added: 27
+    - id: "REQ-P2-12"
+      name: "Jev可解释性"
+      state: "DEV_DONE"
+      priority: "P2"
+      module: "jev/explainability.py"
+      route: "web-dashboard/_routes_explain.py"
+      tests_added: 17
+    - id: "REQ-P1-06"
+      name: "移动端适配/PWA"
+      state: "DEV_DONE"
+      priority: "P1"
+      module: "web-dashboard/quant_dashboard_realtime.html"
+      assets: "manifest.json, sw.js, icons/icon-192.png, icons/icon-512.png"
+      tests_added: 0  # 前端，CDP 移动视口实测代替单测
+
+  final_test:
+    test_case_total: 1108
+    test_case_pass: 1094
+    test_case_skipped: 14
+    failed: 0
+    result: "1094 passed, 14 skipped, 0 failed — 新增44条后端测试，零回归"
+  e2e_result: "scripts/e2e_v41_batch2_check.py：37 passed, 0 failed；8个新端点+4个PWA资源全部验证"
+  mobile_check:
+    viewport: "390×844（CDP 移动模拟，touch）"
+    single_column: true
+    no_horizontal_overflow: true
+    tabbar_flex_visible: true
+    tab_switching: true
+    charts_rendered: 4
+    service_worker_registered: true
+    sw_scope: "http://localhost:8766/"
+    sw_controller_active: true
+    desktop_regression: ">1024 由 CSS max-width 媒体查询保证桌面不变（子代理 1440 实测双列）"
+    evidence: "web-dashboard/_shots/b2_mobile_market.png, b2_mobile_backtest.png"
+  incidental_fix:
+    file: "web-dashboard/quant_dashboard_realtime.html"
+    issue: "renderDayDetail() 同作用域重复声明 const closeVal，导致整段主脚本解析失败、全页无数据"
+    resolution: "第二个声明重命名为 closePrice（3347行 closeVal / 3360行 closePrice）"
+  data_limitations:
+    - "数据 live 取数分支（真实 QuantDash+腾讯）为防御性实现，E2E 用显式 sources 构造，真实网络行情未触发"
+    - "真实交易日历（节假日）未接入，缺失K线按工作日启发式，节假日会误报（docstring 已标注）"
+    - "shap 库未安装，SHAP 走扰动近似（shap_available=False，method=perturbation_approx）"
+    - "移动端下拉刷新逻辑已接通但未逐帧触发；CDP 截图不合成 fixed 层（Tab 栏经 hit-test/computed display 验证）"
+
+v41_batch2_operation_logs:
+  - time: "2026-10-03T17:15:00+08:00"
+    operator: "organizer_agent"
+    action: "第2批开发启动"
+    result: "数据对账+Jev解释+移动端 三代理并行派发（不同文件，互不冲突）"
+  - time: "2026-10-03T17:52:00+08:00"
+    operator: "subagent_s_000cUTIBfyX"
+    action: "REQ-P2-09 数据校验对账 开发完成"
+    result: "交叉验证/四类异常/血缘三态/自动修复/质量评分(实测84.0)/每日报告 + 27条测试"
+  - time: "2026-10-03T17:54:00+08:00"
+    operator: "subagent_s_000cUTImhY0"
+    action: "REQ-P2-12 Jev可解释性 开发完成"
+    result: "扰动重要性/单次解释+中文文本/反事实最小变更/SHAP扰动近似/决策路径 + 17条测试"
+  - time: "2026-10-03T18:10:00+08:00"
+    operator: "subagent_s_000cUTIOAFc"
+    action: "REQ-P1-06 移动端适配 开发完成"
+    result: "响应式三断点/底部5Tab/图表resize/触摸44px/全屏模态/PWA manifest·sw·icons；顺带修复 closeVal 重复声明"
+  - time: "2026-10-03T18:14:00+08:00"
+    operator: "organizer_agent"
+    action: "server.py 注册第14/15组路由 + PWA 静态路由"
+    result: "register_data_routes / register_explain_routes；/manifest.json /sw.js /icons/* 静态服务（含防穿越）"
+  - time: "2026-10-03T18:16:00+08:00"
+    operator: "organizer_agent"
+    action: "全量测试+重启"
+    result: "1094 passed/14 skipped/0 failed；服务重启 8766（PID 12522）"
+  - time: "2026-10-03T18:25:00+08:00"
+    operator: "organizer_agent"
+    action: "E2E + 移动视口实测"
+    result: "E2E 37 passed；390×844 单列/Tab切换/4图表，SW 注册成功 controller 激活；GLOBAL_DONE"

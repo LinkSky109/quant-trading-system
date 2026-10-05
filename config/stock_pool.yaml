@@ -1,0 +1,363 @@
+# ============================================================
+# 量化交易系统 - 股票池配置
+# 筛选策略：双均线趋势跟踪适配标的
+# 筛选条件：市值>500亿 | 日均成交额>5亿 | 非ST | 上市>1年
+# 数据日期：2026-09-28
+# 数据来源：Wind万得 / 同花顺（seed_finance_search 实时检索）
+# 覆盖市场：A股 / 美股 / 港股（全球多市场核心池）
+# ============================================================
+
+pool_meta:
+  name: "全球多市场核心池"
+  strategy: "ma_cross"
+  count: 25
+  screening_date: "2026-09-28"
+  criteria:
+    min_market_cap_yi: 500
+    min_daily_amount_yi: 5
+    volatility_range: "15%-40%"
+    exclude_st: true
+    min_listing_years: 1
+  notes: "波动率为近20交易日日收益率年化估算值，仅供参考；实时行情为模拟数据；本池覆盖A股/美股/港股"
+
+stocks:
+  # ---------------- A股（15） ----------------
+  - symbol: "600519.SH"
+    name: "贵州茅台"
+    industry: "白酒"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 15500
+    daily_amount_yi: 30.8
+    pe_ttm: 19.07
+    volatility_annual: 0.13
+    base_price: 1242.50
+    trend_score: "中低波动，长期趋势稳健"
+
+  - symbol: "300750.SZ"
+    name: "宁德时代"
+    industry: "动力电池"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 13800
+    daily_amount_yi: 90.6
+    pe_ttm: 15.89
+    volatility_annual: 0.32
+    base_price: 291.89
+    trend_score: "高波动高流动性，趋势明确"
+
+  - symbol: "002594.SZ"
+    name: "比亚迪"
+    industry: "新能源汽车"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 6988
+    daily_amount_yi: 13.7
+    pe_ttm: 25.83
+    volatility_annual: 0.21
+    base_price: 83.39
+    trend_score: "中等波动，产业趋势强"
+
+  - symbol: "600036.SH"
+    name: "招商银行"
+    industry: "银行"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 10400
+    daily_amount_yi: 20.1
+    pe_ttm: 6.73
+    volatility_annual: 0.13
+    base_price: 40.49
+    trend_score: "低波动，估值修复趋势"
+
+  - symbol: "601318.SH"
+    name: "中国平安"
+    industry: "保险"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 8946
+    daily_amount_yi: 33.2
+    pe_ttm: 5.93
+    volatility_annual: 0.19
+    base_price: 52.21
+    trend_score: "中等波动，流动性极佳"
+
+  - symbol: "000858.SZ"
+    name: "五粮液"
+    industry: "白酒"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 2677
+    daily_amount_yi: 9.9
+    pe_ttm: 20.46
+    volatility_annual: 0.11
+    base_price: 68.96
+    trend_score: "低波动，消费龙头"
+
+  - symbol: "601012.SH"
+    name: "隆基绿能"
+    industry: "光伏"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 819
+    daily_amount_yi: 8.8
+    pe_ttm: null
+    volatility_annual: 0.24
+    base_price: 10.82
+    trend_score: "中等波动，周期反转候选"
+    risk_note: "PE为负（阶段性亏损），标记观察"
+
+  - symbol: "600276.SH"
+    name: "恒瑞医药"
+    industry: "创新药"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 2938
+    daily_amount_yi: 15.2
+    pe_ttm: 38.23
+    volatility_annual: 0.29
+    base_price: 44.50
+    trend_score: "较高波动，医药创新趋势"
+
+  - symbol: "600900.SH"
+    name: "长江电力"
+    industry: "电力"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 6978
+    daily_amount_yi: 28.0
+    pe_ttm: 19.28
+    volatility_annual: 0.10
+    base_price: 28.52
+    trend_score: "极低波动，防御型配置"
+
+  - symbol: "000333.SZ"
+    name: "美的集团"
+    industry: "家电"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 6242
+    daily_amount_yi: 19.3
+    pe_ttm: 14.07
+    volatility_annual: 0.19
+    base_price: 81.82
+    trend_score: "中等波动，白马蓝筹"
+
+  - symbol: "600030.SH"
+    name: "中信证券"
+    industry: "券商"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 3872
+    daily_amount_yi: 19.8
+    pe_ttm: 10.21
+    volatility_annual: 0.16
+    base_price: 25.93
+    trend_score: "中等波动，市场贝塔标的"
+
+  - symbol: "300059.SZ"
+    name: "东方财富"
+    industry: "互联网金融"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 2829
+    daily_amount_yi: 24.5
+    pe_ttm: 19.40
+    volatility_annual: 0.19
+    base_price: 17.88
+    trend_score: "中等波动，券商+基金代销"
+
+  - symbol: "002475.SZ"
+    name: "立讯精密"
+    industry: "消费电子"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 3848
+    daily_amount_yi: 43.9
+    pe_ttm: 21.72
+    volatility_annual: 0.28
+    base_price: 49.95
+    trend_score: "较高波动，AI硬件产业链"
+
+  - symbol: "002415.SZ"
+    name: "海康威视"
+    industry: "安防科技"
+    market: "A股"
+    exchange: "SZ"
+    currency: "CNY"
+    market_cap_yi: 2949
+    daily_amount_yi: 11.6
+    pe_ttm: 17.94
+    volatility_annual: 0.18
+    base_price: 32.17
+    trend_score: "中等波动，AIoT龙头"
+
+  - symbol: "603259.SH"
+    name: "药明康德"
+    industry: "医药CXO"
+    market: "A股"
+    exchange: "SH"
+    currency: "CNY"
+    market_cap_yi: 4993
+    daily_amount_yi: 52.6
+    pe_ttm: 22.63
+    volatility_annual: 0.30
+    base_price: 161.55
+    trend_score: "高波动高流动性，CXO龙头"
+
+  # ---------------- 美股（5） ----------------
+  - symbol: "AAPL.US"
+    name: "苹果"
+    industry: "消费电子"
+    market: "美股"
+    exchange: "US"
+    currency: "USD"
+    market_cap_yi: 24000
+    daily_amount_yi: 180.0
+    pe_ttm: 33.5
+    volatility_annual: 0.24
+    base_price: 180.0
+    trend_score: "高流动性科技龙头，趋势稳健"
+
+  - symbol: "MSFT.US"
+    name: "微软"
+    industry: "软件服务"
+    market: "美股"
+    exchange: "US"
+    currency: "USD"
+    market_cap_yi: 28000
+    daily_amount_yi: 210.0
+    pe_ttm: 36.2
+    volatility_annual: 0.23
+    base_price: 420.0
+    trend_score: "AI云算力受益，机构重仓"
+
+  - symbol: "GOOGL.US"
+    name: "谷歌"
+    industry: "互联网"
+    market: "美股"
+    exchange: "US"
+    currency: "USD"
+    market_cap_yi: 21000
+    daily_amount_yi: 150.0
+    pe_ttm: 23.8
+    volatility_annual: 0.27
+    base_price: 175.0
+    trend_score: "搜索+广告基本盘，AI加码"
+
+  - symbol: "AMZN.US"
+    name: "亚马逊"
+    industry: "电商云服务"
+    market: "美股"
+    exchange: "US"
+    currency: "USD"
+    market_cap_yi: 21500
+    daily_amount_yi: 160.0
+    pe_ttm: 42.0
+    volatility_annual: 0.30
+    base_price: 205.0
+    trend_score: "电商+AWS双引擎，高贝塔"
+
+  - symbol: "NVDA.US"
+    name: "英伟达"
+    industry: "半导体"
+    market: "美股"
+    exchange: "US"
+    currency: "USD"
+    market_cap_yi: 38000
+    daily_amount_yi: 420.0
+    pe_ttm: 55.0
+    volatility_annual: 0.48
+    base_price: 130.0
+    trend_score: "AI算力核心，高波动高弹性"
+
+  # ---------------- 港股（5） ----------------
+  - symbol: "00700.HK"
+    name: "腾讯控股"
+    industry: "互联网"
+    market: "港股"
+    exchange: "HK"
+    currency: "HKD"
+    market_cap_yi: 38000
+    daily_amount_yi: 220.0
+    pe_ttm: 18.5
+    volatility_annual: 0.28
+    base_price: 380.0
+    trend_score: "港股科网龙头，回购+游戏基本盘"
+
+  - symbol: "09988.HK"
+    name: "阿里巴巴-W"
+    industry: "电商云"
+    market: "港股"
+    exchange: "HK"
+    currency: "HKD"
+    market_cap_yi: 21000
+    daily_amount_yi: 180.0
+    pe_ttm: 16.2
+    volatility_annual: 0.34
+    base_price: 78.0
+    trend_score: "电商复苏+云AI，高波动"
+
+  - symbol: "03690.HK"
+    name: "美团-W"
+    industry: "本地生活"
+    market: "港股"
+    exchange: "HK"
+    currency: "HKD"
+    market_cap_yi: 9000
+    daily_amount_yi: 95.0
+    pe_ttm: 22.0
+    volatility_annual: 0.38
+    base_price: 120.0
+    trend_score: "外卖到店龙头，竞争格局改善"
+
+  - symbol: "01810.HK"
+    name: "小米集团-W"
+    industry: "消费电子汽车"
+    market: "港股"
+    exchange: "HK"
+    currency: "HKD"
+    market_cap_yi: 9500
+    daily_amount_yi: 110.0
+    pe_ttm: 28.5
+    volatility_annual: 0.40
+    base_price: 48.0
+    trend_score: "手机×汽车×AIoT，成长弹性"
+
+  - symbol: "09618.HK"
+    name: "京东集团-SW"
+    industry: "电商物流"
+    market: "港股"
+    exchange: "HK"
+    currency: "HKD"
+    market_cap_yi: 4200
+    daily_amount_yi: 60.0
+    pe_ttm: 11.8
+    volatility_annual: 0.35
+    base_price: 150.0
+    trend_score: "自营电商+物流，低估值高分红"
+
+# 行业分布统计
+industry_distribution:
+  白酒: 2
+  新能源: 2
+  金融: 4
+  医药: 2
+  科技制造: 3
+  电力公用: 1
+  消费: 1
+  海外科技: 5
+  港股科网: 5

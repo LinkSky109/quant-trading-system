@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  quant:
+    build: .
+    container_name: quant-trading
+    ports:
+      - "8766:8766"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./models:/app/models
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    environment:
+      - QUANT_PORT=8766
+      - QUANT_JEV_URL=http://jev:8765
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    depends_on:
+      - jev
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8766/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  jev:
+    image: python:3.11-slim
+    container_name: jev-service
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./jev:/app/jev
+    working_dir: /app/jev
+    command: ["python", "jev_server.py"]
+    restart: unless-stopped
+    profiles:
+      - jev  # 可选服务，默认不启动

@@ -1,0 +1,314 @@
+  # 量化交易系统全局配置
+# ============================================================
+
+# 数据源配置
+data:
+  provider: "quantdash"          # 数据源类型: quantdash / mock
+  api_key: "sk_292e39cbd4884df0bc9bac0d05d3686d"  # QuantDash API Key
+  cache_dir: "./cache"           # 数据缓存目录
+  cache_ttl_hours: 4             # 缓存有效期（小时）
+
+# 数据质量监控配置
+data_quality:
+  enabled: true
+  lag_threshold_seconds: 300       # 数据滞后阈值（5分钟）
+  price_jump_warning: 0.10         # 价格跳变警告阈值（10%）
+  price_jump_critical: 0.20      # 价格跳变严重阈值（20%）
+  max_consecutive_failures: 3     # 连续失败触发告警次数
+  anomaly_history_limit: 200      # 异常历史保留条数
+
+# 标的代码格式统一映射
+symbol_format:
+  a_share_suffix: ".SH"          # 上交所后缀
+  sz_suffix: ".SZ"               # 深交所后缀
+  us_suffix: ".US"               # 美股后缀
+  hk_suffix: ".HK"               # 港股后缀
+
+# 策略参数
+strategies:
+  ma_cross:
+    label: "双均线 MA5/MA20"
+    description: "快线金叉慢线买入，死叉卖出"
+    fast_period: 5
+    slow_period: 20
+    enabled: true
+  bollinger:
+    label: "布林带均值回归"
+    description: "价格触及下轨放量买入，触及上轨放量卖出"
+    period: 20
+    num_std: 2.0
+    volume_filter_period: 20
+    volume_multiplier: 1.0
+    enabled: true
+  momentum_breakout:
+    label: "动量突破"
+    description: "收盘价突破N日高点买入，跌破M日低点卖出"
+    breakout_period: 20
+    breakdown_period: 10
+    enabled: true
+  rsi:
+    label: "RSI 均值回归"
+    description: "RSI 低于超卖阈值买入，高于超买阈值卖出，适合震荡市"
+    period: 14
+    oversold_threshold: 30
+    overbought_threshold: 70
+    enabled: true
+  macd:
+    label: "MACD 金叉死叉"
+    description: "DIF 上穿 DEA 买入，下穿 DEA 卖出，柱状图放量过滤假信号"
+    fast: 12
+    slow: 26
+    signal: 9
+    hist_filter_period: 20
+    enabled: true
+  grid_trading:
+    label: "网格交易"
+    description: "在价格区间内等距挂网格，跌破网格线买入，突破网格线卖出"
+    grid_count: 10
+    upper_bound: null
+    lower_bound: null
+    fixed_confidence: 0.6
+    enabled: true
+  indicator_combo:
+    label: "多指标组合(ADX+MACD+RSI)"
+    description: "ADX>25趋势强+MACD金叉+RSI<70买入；ADX<20+MACD死叉卖出"
+    adx_period: 14
+    adx_buy_threshold: 25
+    adx_sell_threshold: 20
+    rsi_period: 14
+    rsi_overbought: 70
+    macd_fast: 12
+    macd_slow: 26
+    macd_signal: 9
+    enabled: true
+
+# Jev决策模型配置
+jev:
+  base_url: "http://localhost:8765"
+  evaluate_endpoint: "/api/evaluate"
+  timeout: 5.0
+  confidence_threshold: 0.6
+  retry_count: 2
+  mock_mode: true               # 无本地Jev服务时使用模拟模式
+
+# 回测配置
+backtest:
+  initial_capital: 1000000.0
+  commission_rate: 0.00025       # 佣金万分之2.5
+  stamp_tax_rate: 0.0005         # 印花税万分之5（卖出）
+  slippage_rate: 0.001           # 滑点0.1%
+  risk_free_rate: 0.02           # 无风险利率（年化）
+  trading_days_per_year: 252
+
+# 模拟账户配置
+# seed_positions: [标的代码, 目标仓位占初始资金比例]，总比例须 < 初始现金比例
+accounts:
+  - account_id: "acc_1"
+    name: "稳健账户"
+    initial_capital: 1000000.0
+    strategy: "ma_cross"
+    description: "双均线趋势跟踪，低换手，适合稳健配置"
+    account_type: "simulated"   # simulated / real，当前全部为模拟盘
+    seed_positions:
+      - ["600519.SH", 0.45]
+  - account_id: "acc_2"
+    name: "进取账户"
+    initial_capital: 500000.0
+    strategy: "momentum_breakout"
+    description: "动量突破，高波动高收益，进取型"
+    account_type: "simulated"   # simulated / real，当前全部为模拟盘
+    seed_positions:
+      - ["300750.SZ", 0.22]
+      - ["002594.SZ", 0.22]
+  - account_id: "acc_3"
+    name: "均衡账户"
+    initial_capital: 800000.0
+    strategy: "bollinger"
+    description: "布林带均值回归，震荡市优选，攻守均衡"
+    account_type: "simulated"   # simulated / real，当前全部为模拟盘
+    seed_positions:
+      - ["600036.SH", 0.22]
+      - ["601318.SH", 0.18]
+
+# 风控参数
+risk:
+  single_stop_loss: 0.03         # 单笔止损3%
+  single_take_profit: 0.08       # 单笔止盈8%
+  max_drawdown_pause: 0.10       # 总回撤10%暂停
+  max_position_per_symbol: 0.20  # 单标的仓位上限20%
+  max_total_position: 0.80       # 总仓位上限80%
+  daily_loss_limit: 0.02         # 单日亏损限额2%
+  jev_confidence_threshold: 0.6  # Jev置信度阈值
+
+# 日志配置
+logging:
+  level: "INFO"
+  log_dir: "./logs"
+  max_bytes: 10485760            # 10MB
+  backup_count: 5
+
+# 实时交易配置（多标的并行扫描）
+realtime_trading:
+  enabled_symbols: []        # 空=扫描全部股票池，或指定列表如 ["600519.SH","300750.SZ"]
+  max_positions: 5           # 最大同时持仓标的数
+  scan_all: true             # 是否扫描全部标的（false时只处理当前选中标的）
+
+# 告警配置
+alert:
+  webhook_url: ""                # Webhook推送地址（留空则仅日志记录）
+  cooldown_seconds: 300          # 同类告警冷却时间（秒）
+  max_history: 500               # 内存保留最大告警数
+  timeout: 5.0                   # Webhook请求超时（秒）
+
+# 多渠道通知配置（邮件/企微/钉钉/Server酱/通用Webhook）
+notification:
+  enabled: false              # 总开关，默认关闭
+  channels:
+    email:
+      enabled: false
+      smtp_host: "smtp.example.com"
+      smtp_port: 465
+      use_ssl: true
+      user: "alert@example.com"
+      password: ""
+      from_addr: "alert@example.com"
+      to_addrs: ["admin@example.com"]
+    wecom:
+      enabled: false
+      webhook_url: ""
+      msg_type: "markdown"    # text / markdown
+    dingtalk:
+      enabled: false
+      webhook_url: ""
+      secret: ""              # 加签密钥（为空则不加签）
+      msg_type: "markdown"
+    serverchan:
+      enabled: false
+      send_key: ""
+    webhook:
+      enabled: false
+      url: ""
+  rules:
+    level_routing:
+      CRITICAL: ["email", "wecom"]
+      WARNING: ["wecom"]
+      INFO: []
+    event_routing:
+      trade: ["wecom"]
+      risk: ["email", "wecom"]
+      system: ["email"]
+      daily: ["email", "wecom"]
+  silent_hours:
+    enabled: false
+    start: "23:00"
+    end: "08:00"
+
+# 数据备份配置
+backup:
+  enabled: true                  # 是否启用自动备份
+  auto_backup_time: "15:30"      # 每日自动备份时间（收盘后）
+  keep_days: 30                  # 备份保留天数
+  backup_dir: "./data/backups"   # 备份文件目录
+
+# ============================================================
+# API 认证配置（Token 认证）
+# ============================================================
+# enabled:
+#   false = 关闭认证，所有接口无需 token（开发环境默认）
+#   true  = 强制认证，除公开路径（/、/docs、/openapi.json、/api/health、
+#           /api/auth/verify、/ws 无 token 时拒绝连接）外均需携带：
+#             HTTP Header:  Authorization: Bearer <token>
+#             WebSocket:    ws://host/ws?token=<token>
+#
+# tokens 列表字段说明：
+#   name        : token 备注名（仅用于日志展示）
+#   token       : 实际 token 值，用 `python -c "from security.auth import AuthManager; print(AuthManager.generate_token())"` 生成
+#   permission  : read（只读） / trade（可交易） / admin（全部）
+#                 admin > trade > read，高层级自动包含低层级权限
+#   expires_at  : "" = 永不过期；或 "YYYY-MM-DD" 格式的过期日期
+#
+# 路径权限映射（中间件自动判定，无需逐个路由配置）：
+#   公开  : /, /docs, /openapi.json, /redoc, /api/health, /api/auth/verify
+#   read  : 其余所有 /api/* 与 /training_data/* 接口
+#   trade : POST /api/trade_toggle
+#   admin : POST /api/alerts/trigger, GET /api/daily_reports/export
+#
+# 示例（enabled=true 时取消注释并替换为自己生成的 token）：
+# security:
+#   enabled: false
+#   tokens:
+#     - name: "admin-token"
+#       token: "请用 generate_token() 生成并替换"
+#       permission: "admin"
+#       expires_at: ""                  # 永不过期
+#     - name: "trade-token"
+#       token: "请用 generate_token() 生成并替换"
+#       permission: "trade"
+#       expires_at: "2026-12-31"        # 指定日期过期
+#     - name: "read-only-token"
+#       token: "请用 generate_token() 生成并替换"
+#       permission: "read"
+#       expires_at: ""
+security:
+  enabled: false              # 默认关闭，开发环境不认证
+  tokens: []                  # token 列表，enabled=true 时需配置
+
+# ============================================================
+# 安全审计日志配置
+# ============================================================
+# 记录所有交易操作 / 配置变更 / 登录行为的不可篡改审计日志，
+# 双写 SQLite（audit_logs 表）+ JSONL 文件，哈希链完整性校验。
+audit:
+  enabled: true               # 是否启用审计日志
+  log_file: "./logs/audit.jsonl"   # JSONL 追加日志路径
+  retention_days: 90          # SQLite 侧记录保留天数（0=不清理）
+
+# ============================================================
+# API 限流配置（令牌桶算法）
+# ============================================================
+# 按限流维度（认证用户优先按 token 名称，未认证按来源 IP）+ 分级独立配额。
+# 超限返回 429 + Retry-After 头，并记录 RATE_LIMIT_BLOCKED 审计事件。
+rate_limit:
+  enabled: false              # 是否启用限流（生产环境建议开启）
+  tiers:                      # 各分级每分钟配额
+    read: 100                 # 查询类接口（默认）
+    trade: 20                 # POST /api/trade_toggle 交易开关
+    admin: 10                 # 告警触发 / 报表导出 / 备份管理
+    backtest: 5               # 回测 / 回测对比 / 组合回测 / walkthrough / 优化
+  whitelist:                   # 白名单 IP 不限流（本机回环）
+    - "127.0.0.1"
+    - "localhost"
+    - "::1"
+  default_tier: "read"         # 未命中分级的 /api 接口按此配额
+
+# 事件驱动策略配置
+event_strategy:
+  default_mode: "pead"           # pead / limit_up_reversal / limit_up_continuation / volume_spike
+  default_hold_days: 5
+  limit_up_threshold: 0.098      # 涨停阈值（A股9.8%）
+  volume_spike_multiplier: 2.0   # 成交量异常倍数
+  price_gap_threshold: 0.02      # 价格跳空阈值
+  event_study_window: 20         # 事件研究窗口（前后各N日）
+
+# 多因子选股策略配置
+multi_factor:
+  factors:
+    - name: "momentum_20"
+      weight: 0.3
+      direction: 1
+    - name: "volatility_20_inverse"
+      weight: 0.2
+      direction: 1
+    - name: "rsi_14"
+      weight: 0.2
+      direction: -1
+    - name: "amount_log"
+      weight: 0.15
+      direction: 1
+    - name: "macd_hist"
+      weight: 0.15
+      direction: 1
+  rebalance_days: 5
+  top_n: 5
+  standardization: "zscore"
+  missing_handling: "median"

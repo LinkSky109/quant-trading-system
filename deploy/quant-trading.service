@@ -1,0 +1,18 @@
+[Unit]
+Description=Quant Trading System Service
+After=network.target
+
+[Service]
+Type=simple
+User=link
+WorkingDirectory=/Users/link/myApp/doubao/quant_trading_system
+ExecStart=/usr/bin/python3 /Users/link/myApp/doubao/quant_trading_system/web-dashboard/server.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment="PYTHONUNBUFFERED=1"
+Environment="QUANT_PORT=8766"
+
+[Install]
+WantedBy=multi-user.target
