@@ -62,7 +62,7 @@ class FactorEngine:
         direction: +1 表示因子值越大预期收益越高（做多高分位）；
                    -1 表示因子值越小预期收益越高（做多低分位）。
         """
-        return [
+        registry = [
             # 价值因子（低估值为好）
             {"name": "pe_inverse", "category": "价值",
              "description": "PE 倒数（E/P），估值越低得分越高", "direction": +1},
@@ -133,6 +133,15 @@ class FactorEngine:
             {"name": "volatility_clustering", "category": "高频",
              "description": "波动率聚集度", "direction": +1},
         ]
+
+        # 另类因子（REQ-P3-04）：动态并入注册表，模块缺失不阻塞主流程
+        try:
+            from data.alternative import AlternativeFactorEngine as _Alt
+            registry.extend(_Alt().factor_meta())
+        except Exception as exc:  # pragma: no cover - 防御性
+            logger.debug("另类因子注册表并入失败: %s", exc)
+
+        return registry
 
     def get_factor_list(self) -> List[Dict[str, Any]]:
         """返回可用因子列表。
@@ -287,6 +296,15 @@ class FactorEngine:
             from factors.high_frequency import HighFrequencyFactorEngine as _HF
             hf = _HF()
             out = hf.calculate_all(out)
+
+        # ---------------- 另类因子（REQ-P3-04，shift(lag) 防未来函数） ----------------
+        # 另类数据为 symbol 级 mock 序列，reindex 对齐 K 线日期后并列为因子列
+        if symbol:
+            try:
+                from data.alternative import AlternativeFactorEngine as _Alt
+                out = _Alt().attach_to_klines(out, symbol)
+            except Exception as exc:  # 防御性：另类数据失败不影响主因子
+                logger.warning("另类因子计算失败 (%s): %s", symbol, exc)
 
         return out
 

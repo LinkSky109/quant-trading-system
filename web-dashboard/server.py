@@ -3401,6 +3401,63 @@ def _register_extension_routes() -> None:
     except Exception as e:
         logger.warning("加密货币路由注册失败: %s", e)
 
+    # 23. 另类数据路由 (#26, REQ-P3-04)
+    try:
+        from _routes_alternative import register_alternative_routes
+        register_alternative_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("另类数据路由已注册: /api/alternative/*")
+    except Exception as e:
+        logger.warning("另类数据路由注册失败: %s", e)
+
+    # 24. Jev 在线学习路由 (#27, REQ-P3-05)
+    try:
+        from _routes_online_learning import register_online_learning_routes
+        register_online_learning_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("Jev在线学习路由已注册: /api/online_learning/*")
+    except Exception as e:
+        logger.warning("Jev在线学习路由注册失败: %s", e)
+
+    # 25. 国际化路由 (#28, REQ-P3-07)
+    try:
+        from _routes_i18n import register_i18n_routes
+        register_i18n_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("国际化路由已注册: /api/i18n/*")
+    except Exception as e:
+        logger.warning("国际化路由注册失败: %s", e)
+
+    # 26. 主题偏好路由 (#29, REQ-P3-08)
+    try:
+        from _routes_theme import register_theme_routes
+        register_theme_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("主题偏好路由已注册: /api/theme/*")
+    except Exception as e:
+        logger.warning("主题偏好路由注册失败: %s", e)
+
+    # 27. 多因子优化路由 (#18, P3 自定义)
+    try:
+        from _routes_multi_factor_opt import register_multi_factor_opt_routes
+        register_multi_factor_opt_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("多因子优化路由已注册: /api/factors/optimize/*")
+    except Exception as e:
+        logger.warning("多因子优化路由注册失败: %s", e)
+
+    # 28. 智能再平衡路由 (#19, P3 自定义)
+    try:
+        from _routes_smart_rebalance import register_smart_rebalance_routes
+        register_smart_rebalance_routes(app, ok, err)
+        logger.info("智能再平衡路由已注册: /api/rebalance/*")
+    except Exception as e:
+        logger.warning("智能再平衡路由注册失败: %s", e)
+
+    # 29. 自适应风险管理路由 (#20, P3 自定义)
+    try:
+        from _routes_adaptive_risk import register_adaptive_risk_routes
+        register_adaptive_risk_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("自适应风险管理路由已注册: /api/risk/adaptive/*")
+    except Exception as e:
+        logger.warning("自适应风险管理路由注册失败: %s", e)
+
+
 
 _register_extension_routes()
 

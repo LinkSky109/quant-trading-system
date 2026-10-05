@@ -20,6 +20,11 @@
   --border:#dde1e7;--text:#1a1d24;--text2:#5a6072;--text3:#8a91a3;
   --up:#00b386;--down:#e5395a;--gold:#c78f0a;--blue:#2b7de1;--purple:#7c5ce0;
 }
+/* 主题切换平滑过渡（REQ-P3-08）：切换瞬间挂 html.theme-transition，400ms 后移除 */
+html.theme-transition, html.theme-transition *{
+  transition: background-color .35s ease, color .35s ease, border-color .35s ease,
+              fill .35s ease, stroke .35s ease, box-shadow .35s ease !important;
+}
 html{font-size:14px}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
@@ -613,23 +618,30 @@ tr.wt-row-executed td.op-cell{color:var(--up) !important;font-weight:700}
   <div class="header-left">
     <div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17l5-6 4 4 7-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div>
-      <h1>量化交易系统 <span>·</span> 实时看板</h1>
+      <h1 data-i18n-html="ui.title">量化交易系统 <span>·</span> 实时看板</h1>
       <div class="subtitle" id="headerSub">连接中...</div>
     </div>
   </div>
   <div class="header-right">
-    <div class="sel-wrap" title="股票选择器">
-      <label>标的</label>
+    <div class="sel-wrap" data-i18n-title="ui.tip_symbol" title="股票选择器">
+      <label data-i18n="ui.label_symbol">标的</label>
       <select id="symbolSel"></select>
     </div>
-    <div class="sel-wrap" title="策略切换">
-      <label>策略</label>
+    <div class="sel-wrap" data-i18n-title="ui.tip_strategy" title="策略切换">
+      <label data-i18n="ui.label_strategy">策略</label>
       <select id="strategySel"></select>
     </div>
-    <button class="btn" onclick="openBacktestModal()">运行回测</button>
+    <button class="btn" data-i18n="ui.run_backtest" onclick="openBacktestModal()">运行回测</button>
     <span class="conn-badge disconnected" id="connBadge"><i class="conn-dot"></i><span id="connText">未连接</span></span>
     <span class="ws-badge disconnected" id="wsBadge" title="WebSocket 实时推送状态"><i class="ws-dot"></i><span id="wsText">WS: 未连接</span></span>
     <span class="badge num" id="tickBadge">Tick: 0</span>
+    <div class="sel-wrap" title="Language / 语言">
+      <label data-i18n="ui.language">语言</label>
+      <select id="langSelect" onchange="I18nModule.setLang(this.value)">
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
+    </div>
     <button class="mute-btn" id="muteBtn" title="静音开关" onclick="NotificationModule.toggleMute()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
     </button>
@@ -649,16 +661,16 @@ tr.wt-row-executed td.op-cell{color:var(--up) !important;font-weight:700}
   <!-- 实时行情条 -->
   <div class="ticker-bar" id="tickerBar">
     <div class="ticker-item price">
-      <div class="label">最新价</div>
+      <div class="label" data-i18n="rt.last">最新价</div>
       <div class="value num" id="rtPrice">--</div>
       <div class="sub num" id="rtChange">--</div>
     </div>
-    <div class="ticker-item"><div class="label">今开</div><div class="value num" id="rtOpen">--</div></div>
-    <div class="ticker-item"><div class="label">最高</div><div class="value num" id="rtHigh">--</div></div>
-    <div class="ticker-item"><div class="label">最低</div><div class="value num" id="rtLow">--</div></div>
-    <div class="ticker-item"><div class="label">昨收</div><div class="value num" id="rtPrev">--</div></div>
-    <div class="ticker-item"><div class="label">成交量</div><div class="value num" id="rtVol">--</div></div>
-    <div class="ticker-item"><div class="label">成交额</div><div class="value num" id="rtAmt">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.open">今开</div><div class="value num" id="rtOpen">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.high">最高</div><div class="value num" id="rtHigh">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.low">最低</div><div class="value num" id="rtLow">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.prev">昨收</div><div class="value num" id="rtPrev">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.volume">成交量</div><div class="value num" id="rtVol">--</div></div>
+    <div class="ticker-item"><div class="label" data-i18n="rt.amount">成交额</div><div class="value num" id="rtAmt">--</div></div>
   </div>
 
   <!-- K线 + 盘口 -->
@@ -1207,15 +1219,181 @@ tr.wt-row-executed td.op-cell{color:var(--up) !important;font-weight:700}
 
 <script>
 // ============================================================
+// i18n 国际化（REQ-P3-07）：语言包 + data-i18n 渲染 + Accept-Language 注入
+// ============================================================
+const I18nModule = (function(){
+  const LANG_KEY = 'quant_lang';
+  const PACKS = {
+    zh: {
+      'ui.title': '量化交易系统 <span>·</span> 实时看板',
+      'ui.label_symbol': '标的', 'ui.label_strategy': '策略',
+      'ui.tip_symbol': '股票选择器', 'ui.tip_strategy': '策略切换',
+      'ui.run_backtest': '运行回测', 'ui.language': '语言',
+      'rt.last': '最新价', 'rt.open': '今开', 'rt.high': '最高', 'rt.low': '最低',
+      'rt.prev': '昨收', 'rt.volume': '成交量', 'rt.amount': '成交额'
+    },
+    en: {
+      'ui.title': 'Quant Trading <span>·</span> Realtime Dashboard',
+      'ui.label_symbol': 'Symbol', 'ui.label_strategy': 'Strategy',
+      'ui.tip_symbol': 'Symbol selector', 'ui.tip_strategy': 'Strategy switch',
+      'ui.run_backtest': 'Run Backtest', 'ui.language': 'Language',
+      'rt.last': 'Last', 'rt.open': 'Open', 'rt.high': 'High', 'rt.low': 'Low',
+      'rt.prev': 'Prev Close', 'rt.volume': 'Volume', 'rt.amount': 'Amount'
+    }
+  };
+  const SUPPORTED = ['zh', 'en'];
+
+  function detectLang(){
+    var stored = null;
+    try{ stored = localStorage.getItem(LANG_KEY); }catch(e){}
+    if(stored && SUPPORTED.indexOf(stored) >= 0) return stored;
+    var nav = (navigator.language || 'zh-CN').toLowerCase();
+    return SUPPORTED.indexOf(nav) >= 0 ? nav : (nav.indexOf('en') === 0 ? 'en' : 'zh');
+  }
+
+  let current = detectLang();
+
+  function t(key){
+    var pack = PACKS[current] || PACKS.zh;
+    return pack[key] !== undefined ? pack[key] : (PACKS.zh[key] !== undefined ? PACKS.zh[key] : key);
+  }
+
+  function apply(){
+    document.documentElement.setAttribute('lang', current === 'en' ? 'en' : 'zh-CN');
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el){
+      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+      el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+    });
+    var sel = document.getElementById('langSelect');
+    if(sel) sel.value = current;
+  }
+
+  function setLang(lang){
+    if(SUPPORTED.indexOf(lang) < 0) return;
+    current = lang;
+    try{ localStorage.setItem(LANG_KEY, lang); }catch(e){}
+    apply();
+    // 广播语言变化（数字/货币格式模块可监听重渲染）
+    window.dispatchEvent(new CustomEvent('langchange', {detail:{lang: current}}));
+  }
+
+  // 数字/货币/百分比按地区格式化（前端本地版；后端另有 /api/i18n/format）
+  function fmtNumber(v, precision){
+    var p = precision === undefined ? 2 : precision;
+    return Number(v).toLocaleString(current === 'en' ? 'en-US' : 'zh-CN',
+      {minimumFractionDigits: p, maximumFractionDigits: p});
+  }
+  function fmtCurrency(v, precision){
+    return (current === 'en' ? '$' : '¥') + fmtNumber(v, precision);
+  }
+  function fmtPercent(v, precision){
+    var p = precision === undefined ? 2 : precision;
+    return (v * 100).toFixed(p) + '%';
+  }
+
+  apply();
+
+  return {
+    setLang: setLang,
+    t: t,
+    getCurrent: function(){ return current; },
+    fmtNumber: fmtNumber,
+    fmtCurrency: fmtCurrency,
+    fmtPercent: fmtPercent
+  };
+})();
+
+// 全局 fetch 注入 Accept-Language，后端 /api/i18n/* 按此返回语言
+(function(){
+  if(!window.fetch || window.__i18nFetchPatched) return;
+  var _origFetch = window.fetch.bind(window);
+  window.__i18nFetchPatched = true;
+  window.fetch = function(input, init){
+    try{
+      init = init || {};
+      var headers = new Headers((init && init.headers) || (input && input.headers) || {});
+      if(!headers.has('Accept-Language')){
+        headers.set('Accept-Language',
+          I18nModule.getCurrent() === 'en' ? 'en-US,en;q=0.9' : 'zh-CN,zh;q=0.9');
+      }
+      init.headers = headers;
+    }catch(e){}
+    return _origFetch(input, init);
+  };
+})();
+
+// ============================================================
 // 主题管理（REQ-P3-08 暗黑/亮色主题）
 // ============================================================
 const ThemeModule = (function(){
   const STORAGE_KEY = 'quant_theme';
   const THEMES = ['dark','light'];
-  let current = localStorage.getItem(STORAGE_KEY) || 'dark';
+  let current = null;
 
-  function apply(theme){
-    document.documentElement.setAttribute('data-theme', theme);
+  // ---- ECharts 主题注册（REQ-P3-08：图表随主题切换配色） ----
+  if(window.echarts){
+    echarts.registerTheme('quant-dark', {
+      backgroundColor: 'transparent',
+      textStyle: {color: '#e4e8f0'},
+      color: ['#00d4aa','#4da6ff','#a78bfa','#f0b90b','#ff4d6a','#0891b2','#22d3ee','#e879f9'],
+      title: {textStyle: {color: '#e4e8f0'}},
+      legend: {textStyle: {color: '#8b93a7'}},
+      tooltip: {
+        backgroundColor: '#1c2238', borderColor: '#252b45',
+        textStyle: {color: '#e4e8f0'}
+      },
+      categoryAxis: {
+        axisLine: {lineStyle: {color: '#252b45'}},
+        axisLabel: {color: '#8b93a7'}, splitLine: {lineStyle: {color: '#1c2238'}}
+      },
+      valueAxis: {
+        axisLine: {lineStyle: {color: '#252b45'}},
+        axisLabel: {color: '#8b93a7'}, splitLine: {lineStyle: {color: '#1c2238'}}
+      }
+    });
+    echarts.registerTheme('quant-light', {
+      backgroundColor: 'transparent',
+      textStyle: {color: '#1a1d24'},
+      color: ['#00b386','#2b7de1','#7c5ce0','#c78f0a','#e5395a','#0891b2','#0ea5e9','#c026d3'],
+      title: {textStyle: {color: '#1a1d24'}},
+      legend: {textStyle: {color: '#5a6072'}},
+      tooltip: {
+        backgroundColor: '#ffffff', borderColor: '#dde1e7',
+        textStyle: {color: '#1a1d24'}
+      },
+      categoryAxis: {
+        axisLine: {lineStyle: {color: '#dde1e7'}},
+        axisLabel: {color: '#5a6072'}, splitLine: {lineStyle: {color: '#eef1f6'}}
+      },
+      valueAxis: {
+        axisLine: {lineStyle: {color: '#dde1e7'}},
+        axisLabel: {color: '#5a6072'}, splitLine: {lineStyle: {color: '#eef1f6'}}
+      }
+    });
+  }
+
+  // ---- 初始主题：localStorage > prefers-color-scheme > dark ----
+  var stored = null;
+  try{ stored = localStorage.getItem(STORAGE_KEY); }catch(e){}
+  if(stored && THEMES.indexOf(stored) >= 0){
+    current = stored;
+  }else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches){
+    current = 'light'; // 跟随系统
+  }else{
+    current = 'dark';
+  }
+
+  function apply(theme, persist){
+    // 平滑过渡：切换瞬间挂过渡类，动画结束后移除
+    var root = document.documentElement;
+    root.classList.add('theme-transition');
+    root.setAttribute('data-theme', theme);
+    setTimeout(function(){ root.classList.remove('theme-transition'); }, 400);
     var meta = document.querySelector('meta[name="theme-color"]');
     if(meta) meta.setAttribute('content', theme==='light' ? '#f5f7fa' : '#0b0f19');
     var moon = document.getElementById('themeIconMoon');
@@ -1224,14 +1402,36 @@ const ThemeModule = (function(){
       moon.style.display = theme==='light' ? 'none' : '';
       sun.style.display  = theme==='light' ? '' : 'none';
     }
-    localStorage.setItem(STORAGE_KEY, theme);
+    // 仅用户显式切换时持久化；系统跟随的初始探测不落盘，
+    // 否则 prefers-color-scheme 监听永远失效
+    if(persist){
+      try{ localStorage.setItem(STORAGE_KEY, theme); }catch(e){}
+    }
     current = theme;
+    // 当前 echarts 主题名（getChart 初始化图表时使用）。
+    // AppState 可能尚未声明（TDZ），try/catch 兜底；getChart 会按
+    // documentElement 的 data-theme 兜底推断主题。
+    try{
+      AppState.echartsTheme = theme === 'light' ? 'quant-light' : 'quant-dark';
+    }catch(e){}
+    // 同步后端偏好（best-effort，失败不影响前端；仅显式切换时同步）
+    if(persist){
+      try{
+        fetch('/api/theme/preference', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({theme: theme})
+        }).catch(function(){});
+      }catch(e){}
+    }
+    // 广播主题变化（图表模块可监听重建）
+    window.dispatchEvent(new CustomEvent('themechange', {detail:{theme: theme}}));
   }
 
   function toggleTheme(){
     var next = current==='dark' ? 'light' : 'dark';
     apply(next);
-    // 销毁所有图表，让各模块在下次数据刷新时重建以适配新主题
+    // 销毁所有图表，让各模块在下次数据刷新时以新 echarts 主题重建
     Object.values(AppState.charts).forEach(function(c){ try{ c.dispose(); }catch(e){} });
     AppState.charts = {};
     // 触发各模块刷新
@@ -1253,7 +1453,20 @@ const ThemeModule = (function(){
     }, 50);
   }
 
-  apply(current); // 页面加载时立即应用
+  // 系统主题变化实时适配（仅在用户未手动选择过主题时跟随）
+  if(window.matchMedia){
+    try{
+      window.matchMedia('(prefers-color-scheme: light)')
+        .addEventListener('change', function(e){
+          var saved = null;
+          try{ saved = localStorage.getItem(STORAGE_KEY); }catch(err){}
+          if(!saved && e.matches) apply('light');
+          if(!saved && !e.matches) apply('dark');
+        });
+    }catch(e){ /* 旧浏览器无 addEventListener，忽略 */ }
+  }
+
+  apply(current, stored !== null); // 页面加载时立即应用；系统跟随不落盘
   return {toggleTheme, getCurrent: function(){ return current; }};
 })();
 
@@ -1313,7 +1526,13 @@ async function api(path, opts){
 }
 
 function getChart(id){
-  if(!AppState.charts[id]) AppState.charts[id] = echarts.init($(id));
+  // 图表以当前主题初始化（REQ-P3-08：ECharts 随主题切换配色）
+  if(!AppState.charts[id]){
+    var themeName = AppState.echartsTheme ||
+      (document.documentElement.getAttribute('data-theme') === 'light'
+        ? 'quant-light' : 'quant-dark');
+    AppState.charts[id] = echarts.init($(id), themeName);
+  }
   return AppState.charts[id];
 }
 

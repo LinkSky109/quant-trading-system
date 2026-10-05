@@ -434,6 +434,41 @@ class JevDecisionEngine:
         }
 
     # ------------------------------------------------------------------
+    # 在线学习（REQ-P3-05）
+    # ------------------------------------------------------------------
+    def update_model(
+        self,
+        feedback_records: List[Dict[str, Any]],
+        feature_keys: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """在线增量更新模型（委托 jev.online_learning 实现）。
+
+        首次调用自动挂载 :class:`~jev.online_learning.OnlineLearningPipeline`；
+        后续调用走增量训练（SGD partial_fit，非全量重训），并自动做
+        概念漂移检测与滑动窗口衰减。
+
+        Args:
+            feedback_records: 决策反馈列表，每条形如
+                ``{"features": {...}, "realized_return": 0.012}``。
+            feature_keys: 特征顺序；None 则按首条记录的 key 排序。
+
+        Returns:
+            本次更新的统计（batch_loss / window / drift 等）。
+        """
+        from jev.online_learning import update_model as _update_model
+
+        return _update_model(self, feedback_records, feature_keys)
+
+    def get_online_learning_stats(self) -> Optional[Dict[str, Any]]:
+        """返回在线学习管线统计；尚未挂载时返回 None。"""
+        pipeline = getattr(self, "_online_pipeline", None)
+        if pipeline is None:
+            return None
+        stats = pipeline.get_stats()
+        stats["accuracy_proxy"] = pipeline.accuracy_proxy()
+        return stats
+
+    # ------------------------------------------------------------------
     # 内部辅助
     # ------------------------------------------------------------------
 
