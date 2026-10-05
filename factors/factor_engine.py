@@ -114,6 +114,24 @@ class FactorEngine:
             {"name": "amount_log", "category": "流动性",
              "description": "成交额对数 log(amount)，流动性越好得分越高",
              "direction": +1},
+            # 高频因子
+            {"name": "overnight_jump", "category": "高频",
+             "description": "隔夜跳空收益率 (open-pre_close)/pre_close",
+             "direction": -1},
+            {"name": "intraday_range", "category": "高频",
+             "description": "日内振幅比 (high-low)/close", "direction": -1},
+            {"name": "volume_imbalance", "category": "高频",
+             "description": "成交量量比", "direction": +1},
+            {"name": "price_acceleration", "category": "高频",
+             "description": "价格加速度（收益率二阶差分）", "direction": -1},
+            {"name": "vwap_deviation", "category": "高频",
+             "description": "VWAP 偏离度", "direction": -1},
+            {"name": "consecutive_up", "category": "高频",
+             "description": "连续上涨天数", "direction": -1},
+            {"name": "consecutive_down", "category": "高频",
+             "description": "连续下跌天数", "direction": +1},
+            {"name": "volatility_clustering", "category": "高频",
+             "description": "波动率聚集度", "direction": +1},
         ]
 
     def get_factor_list(self) -> List[Dict[str, Any]]:
@@ -263,6 +281,12 @@ class FactorEngine:
         out["roe"] = fund["roe"]
         out["gross_margin"] = fund["gross_margin"]
         out["debt_ratio_inverse"] = 1.0 / fund["debt_ratio"]
+
+        # ---------------- 高频因子（需 open/high/low/volume/amount） ----------------
+        if all(c in out.columns for c in ("open", "high", "low", "volume", "amount")):
+            from factors.high_frequency import HighFrequencyFactorEngine as _HF
+            hf = _HF()
+            out = hf.calculate_all(out)
 
         return out
 

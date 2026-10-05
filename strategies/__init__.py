@@ -1,6 +1,7 @@
 """策略引擎模块。"""
 from .base_strategy import BaseStrategy, Signal
 from .bollinger import BollingerStrategy
+from .cross_market_arbitrage import CrossMarketArbitrageStrategy
 from .cta import CTAStrategy
 from .grid_trading import GridTradingStrategy
 from .indicator_combo import IndicatorComboStrategy
@@ -23,5 +24,6 @@ __all__ = [
     "IndicatorComboStrategy",
     "CTAStrategy",
     "VolatilityStrategy",
+    "CrossMarketArbitrageStrategy",
     "StrategyEngine",
 ]

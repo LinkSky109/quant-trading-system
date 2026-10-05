@@ -3211,9 +3211,6 @@ def _register_extension_routes() -> None:
     - 报告生成: POST /api/backtest/report, GET /api/reports/list, GET /api/reports/{id}/download
     - 多因子选股: POST /api/multifactor/{score,backtest}, GET /api/multifactor/config
     - 机器学习预测: POST /api/ml/{train,predict,backtest}, GET /api/ml/models
-    - 多因子模型优化: POST /api/factors/optimize, /api/factors/orthogonalize, /api/factors/winsorize
-    - 智能组合再平衡: POST /api/rebalance/run, /api/rebalance/drift, /api/rebalance/cost, /api/rebalance/tax_estimate, /api/rebalance/tax_loss_harvest
-    - 自适应风险管理: POST /api/risk/adaptive/var, /api/risk/adaptive/budget, /api/risk/adaptive/tail_risk, /api/risk/adaptive/stress_test, /api/risk/adaptive/report
     """
     # 1. 因子分析路由
     try:
@@ -3364,29 +3361,21 @@ def _register_extension_routes() -> None:
     except Exception as e:
         logger.warning("Jev Ensemble 路由注册失败: %s", e)
 
-    # 18. 多因子模型优化路由
+    # 18. 高频因子路由 (#21)
     try:
-        from _routes_multi_factor_opt import register_multi_factor_opt_routes
-        register_multi_factor_opt_routes(app, manager, SYMBOL_SET, ok, err)
-        logger.info("多因子优化路由已注册: /api/factors/optimize/*")
+        from _routes_high_frequency import register_highfreq_routes
+        register_highfreq_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("高频因子路由已注册: /api/highfreq/*")
     except Exception as e:
-        logger.warning("多因子优化路由注册失败: %s", e)
+        logger.warning("高频因子路由注册失败: %s", e)
 
-    # 19. 智能组合再平衡路由
+    # 19. 跨市场套利路由 (#22)
     try:
-        from _routes_smart_rebalance import register_smart_rebalance_routes
-        register_smart_rebalance_routes(app, ok, err)
-        logger.info("智能再平衡路由已注册: /api/rebalance/*")
+        from _routes_cross_market import register_cross_market_routes
+        register_cross_market_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("跨市场套利路由已注册: /api/crossmarket/*")
     except Exception as e:
-        logger.warning("智能再平衡路由注册失败: %s", e)
-
-    # 20. 自适应风险管理路由
-    try:
-        from _routes_adaptive_risk import register_adaptive_risk_routes
-        register_adaptive_risk_routes(app, manager, SYMBOL_SET, ok, err)
-        logger.info("自适应风险管理路由已注册: /api/risk/adaptive/*")
-    except Exception as e:
-        logger.warning("自适应风险管理路由注册失败: %s", e)
+        logger.warning("跨市场套利路由注册失败: %s", e)
 
 
 _register_extension_routes()

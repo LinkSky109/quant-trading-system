@@ -61,11 +61,11 @@ def klines() -> pd.DataFrame:
 # 1. 因子库元数据
 # ---------------------------------------------------------------------------
 def test_factor_list_count(engine: FactorEngine) -> None:
-    """因子库至少 15 个因子，且分属 7 大类。"""
+    """因子库至少 15 个因子，且分属 8 大类（含高频）。"""
     fl = engine.get_factor_list()
     assert len(fl) >= 15, f"因子数不足: {len(fl)}"
     categories = {f["category"] for f in fl}
-    assert len(categories) == 7, f"分类数 != 7: {categories}"
+    assert len(categories) == 8, f"分类数 != 8: {categories}"
     for f in fl:
         assert {"name", "category", "description", "direction"} <= set(f)
 
