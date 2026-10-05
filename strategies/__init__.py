@@ -7,6 +7,7 @@ from .grid_trading import GridTradingStrategy
 from .indicator_combo import IndicatorComboStrategy
 from .ma_cross import MACrossStrategy
 from .macd import MACDStrategy
+from .market_making import MarketMakingStrategy
 from .momentum_breakout import MomentumBreakoutStrategy
 from .rsi import RSIStrategy
 from .strategy_engine import StrategyEngine
@@ -25,5 +26,6 @@ __all__ = [
     "CTAStrategy",
     "VolatilityStrategy",
     "CrossMarketArbitrageStrategy",
+    "MarketMakingStrategy",
     "StrategyEngine",
 ]

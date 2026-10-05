@@ -3377,6 +3377,30 @@ def _register_extension_routes() -> None:
     except Exception as e:
         logger.warning("跨市场套利路由注册失败: %s", e)
 
+    # 20. 做市策略路由 (#23)
+    try:
+        from _routes_market_making import register_market_making_routes
+        register_market_making_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("做市策略路由已注册: /api/marketmaking/*")
+    except Exception as e:
+        logger.warning("做市策略路由注册失败: %s", e)
+
+    # 21. 期权支持路由 (#24)
+    try:
+        from _routes_options import register_options_routes
+        register_options_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("期权支持路由已注册: /api/options/*")
+    except Exception as e:
+        logger.warning("期权支持路由注册失败: %s", e)
+
+    # 22. 加密货币路由 (#25)
+    try:
+        from _routes_crypto import register_crypto_routes
+        register_crypto_routes(app, manager, SYMBOL_SET, ok, err)
+        logger.info("加密货币路由已注册: /api/crypto/*")
+    except Exception as e:
+        logger.warning("加密货币路由注册失败: %s", e)
+
 
 _register_extension_routes()
 
