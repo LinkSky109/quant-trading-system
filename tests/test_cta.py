@@ -75,3 +75,15 @@ def test_cta_signal_shift_no_future(sample_df):
     raw = strategy._compute_raw_signals(sample_df)
     # shift(1)后第一行应为NaN或0
     assert raw["signal"].iloc[0] == 0 or pd.isna(raw["signal"].iloc[0])
+
+
+
+def test_cta_sell_confidence_varies(sample_df):
+    """验证不同卖出幅度的 confidence 不相等（非恒为 0.3）。"""
+    strategy = CTAStrategy()
+    raw = strategy._compute_raw_signals(sample_df)
+    sell_signals = raw[raw["signal"] == -1]
+    if len(sell_signals) > 1:
+        # 至少应有不同幅度的卖出信号，confidence 不应全部相等
+        unique_conf = sell_signals["confidence"].nunique()
+        assert unique_conf > 1 or sell_signals["confidence"].iloc[0] != 0.3

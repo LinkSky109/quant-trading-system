@@ -55,10 +55,16 @@ class VolatilityStrategy(BaseStrategy):
 
         # 历史波动率分位 (波动率锥)
         vol_history = out["current_vol"].shift(1).rolling(window=self.lookback_period, min_periods=30)
-        out["vol_percentile"] = vol_history.apply(
-            lambda x: x.rank(pct=True).iloc[-1] if len(x) >= 30 else np.nan,
-            raw=False,
-        )
+        # 使用 searchsorted 替代全窗口排序，提升性能
+        vol_arr = out["current_vol"].shift(1).values
+        out["vol_percentile"] = np.nan
+        for i in range(len(out)):
+            window = vol_arr[max(0, i - self.lookback_period + 1):i]
+            if len(window) >= 30:
+                current = vol_arr[i]
+                sorted_vals = np.sort(window)
+                idx = np.searchsorted(sorted_vals, current, side="right")
+                out.iloc[i, out.columns.get_loc("vol_percentile")] = idx / len(window)
 
         # 简化计算: 使用quantile
         out["vol_p20"] = vol_history.quantile(0.20)

@@ -67,13 +67,20 @@ class CTAStrategy(BaseStrategy):
             out.loc[dc_buy, "signal"] = 1
             out.loc[dc_sell, "signal"] = -1
 
-        # 置信度: 基于突破幅度 / ATR
-        atr_break_strength = (out["close"] - out["atr_upper"].shift(1)) / out["atr"]
-        dc_break_strength = (out["close"] - out["donchian_high"]) / out["atr"]
-        strength = pd.concat([atr_break_strength, dc_break_strength], axis=1).max(axis=1)
+        # 置信度: 基于突破幅度 / ATR，买入/卖出分别计算
+        atr_buy_strength = (out["close"] - out["atr_upper"].shift(1)) / out["atr"]
+        dc_buy_strength = (out["close"] - out["donchian_high"]) / out["atr"]
+        buy_strength = pd.concat([atr_buy_strength, dc_buy_strength], axis=1).max(axis=1)
 
-        out["confidence"] = (strength / 2.0).clip(0.3, 1.0)
-        out.loc[out["signal"] == 0, "confidence"] = 0.0
+        atr_sell_strength = (out["atr_lower"].shift(1) - out["close"]) / out["atr"]
+        dc_sell_strength = (out["donchian_low"] - out["close"]) / out["atr"]
+        sell_strength = pd.concat([atr_sell_strength, dc_sell_strength], axis=1).max(axis=1)
+
+        out["confidence"] = 0.0
+        buy_mask = out["signal"] > 0
+        sell_mask = out["signal"] < 0
+        out.loc[buy_mask, "confidence"] = (buy_strength.loc[buy_mask] / 2.0).clip(0.3, 1.0)
+        out.loc[sell_mask, "confidence"] = (sell_strength.loc[sell_mask] / 2.0).clip(0.3, 1.0)
 
         # 元数据
         out["metadata"] = out.apply(

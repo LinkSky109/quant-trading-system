@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -128,6 +129,8 @@ class MockFundamentalProvider(FundamentalProvider):
             profit_growth_yoy=self._mock_value(seed + 10, 0.12, 0.25, -1.0, 3.0),
             debt_to_asset=self._mock_value(seed + 11, 0.45, 0.15, 0.05, 0.95),
             current_ratio=self._mock_value(seed + 12, 1.5, 0.5, 0.3, 5.0),
+            inventory_turnover=self._mock_value(seed + 13, 5.0, 2.0, 0.5, 20.0),
+            receivable_turnover=self._mock_value(seed + 14, 8.0, 3.0, 1.0, 30.0),
             source="mock",
         )
 
@@ -140,7 +143,8 @@ class CachedFundamentalProvider(FundamentalProvider):
         self.cache_ttl = cache_ttl_hours * 3600
 
     def _cache_path(self, symbol: str) -> Path:
-        return _CACHE_DIR / f"{symbol.replace('.', '_')}.json"
+        safe = re.sub(r'[^a-zA-Z0-9_-]', '_', symbol)
+        return _CACHE_DIR / f"{safe}.json"
 
     def _is_cache_valid(self, path: Path) -> bool:
         if not path.exists():

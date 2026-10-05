@@ -182,12 +182,12 @@ class ABTestingFramework:
 
     @staticmethod
     def _max_drawdown(returns: List[float]) -> float:
-        """计算最大回撤。"""
+        """计算最大回撤（使用复利累积）。"""
         if not returns:
             return 0.0
-        cum = np.cumsum(returns)
+        cum = np.cumprod(1 + np.array(returns))
         peak = np.maximum.accumulate(cum)
-        dd = cum - peak
+        dd = (cum - peak) / peak
         return float(dd.min())
 
     def get_report(self, experiment_id: str) -> Dict[str, Any]:

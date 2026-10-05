@@ -92,3 +92,31 @@ def test_different_markets():
     assert cn.pe_ttm is not None
     assert us.pe_ttm is not None
     assert hk.pe_ttm is not None
+
+
+
+def test_mock_provider_all_fields():
+    """断言 MockFundamentalProvider 返回的全部 18 个字段均不为 None。"""
+    provider = MockFundamentalProvider()
+    data = provider.fetch("TEST.SH")
+    fields = [
+        "symbol", "date", "pe_ttm", "pb", "ps_ttm", "dividend_yield",
+        "ev_ebitda", "roe", "roa", "gross_margin", "net_margin",
+        "revenue_growth_yoy", "profit_growth_yoy", "debt_to_asset",
+        "current_ratio", "inventory_turnover", "receivable_turnover", "source",
+    ]
+    for field in fields:
+        val = getattr(data, field)
+        assert val is not None, f"Field {field} is None"
+
+
+def test_cache_path_traversal():
+    """验证 _cache_path 对路径遍历字符的正确清理。"""
+    provider = CachedFundamentalProvider(MockFundamentalProvider())
+    # 正常 symbol
+    p1 = provider._cache_path("600519.SH")
+    assert ".." not in str(p1)
+    # 含路径遍历字符
+    p2 = provider._cache_path("../etc/passwd")
+    assert ".." not in str(p2)
+    assert "passwd" in str(p2)

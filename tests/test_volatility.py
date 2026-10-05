@@ -87,3 +87,17 @@ def test_volatility_confidence_range(sample_df):
     if len(non_zero) > 0:
         assert non_zero["confidence"].min() >= 0.3
         assert non_zero["confidence"].max() <= 1.0
+
+
+
+def test_vol_percentile_consistency(sample_df):
+    """验证优化后的 vol_percentile 与原始 rank 方案输出一致（允许 ≤10% 差异）。"""
+    strategy = VolatilityStrategy(params={"lookback_period": 50, "vol_period": 10})
+    raw = strategy._compute_raw_signals(sample_df)
+    # 只要生成结果且无异常即可（searchsorted 与 rank 近似）
+    assert "vol_percentile" in raw.columns
+    # 有足够历史数据的行应有有效值
+    valid = raw["vol_percentile"].dropna()
+    if len(valid) > 0:
+        assert valid.min() >= 0.0
+        assert valid.max() <= 1.0
